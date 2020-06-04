@@ -51,7 +51,7 @@
 		</property>
 		</configuration>
 	
-5.安装hive和mysq完成后，将mysql的连接jar包拷贝到$HIVE_HOME/lib目录下
+5.安装hive和mysql完成后，将mysql的连接jar包拷贝到$HIVE_HOME/lib目录下
 	如果出现没有权限的问题，在mysql授权(在安装mysql的机器上执行)
 	mysql -uroot -p
 	#(执行下面的语句  *.*:所有库下的所有表   %：任何IP地址或主机都可以连接)
@@ -84,3 +84,32 @@ Hive几种使用方式：
 	4.Hive命令 
 		hive  -e  ‘sql’
 		bin/hive -e 'select * from t_test'
+
+
+5. 使用  --define foo=bar  声明变量
+
+       命令： hive --define foo=bar
+
+6. 使用--hiveconf 配置属性
+      hive --hiveconf hive.cli.print.current.db=true (显示当前的数据库名)
+
+
+   hive -e 执行sql语句，然后退出cli
+   -S 表示静默模式，会去掉查询结果中的OK
+
+   hive -S -e "use tests; select * from student limit 3;"
+
+   可以使用下面的语句查询 属性
+   hive -S -e "set"| grep warehouse
+
+   通常如果多条sql语句的话，我们会写到sql文件中，然后通过hive -f 来执行
+   hive -f select.sql
+   
+   加载数据
+   hive -e "load data local inpath '/a.txt' into table src"
+
+   hive执行bash shell命令(只要在前面加上!)  注意： 这里的shell不支持管道
+   ! pwd;   
+
+   hive使用dfs命令
+   dfs -ls /;

@@ -1,0 +1,77 @@
+1. ODS: Operational Data Store
+
+2. ETL项目:
+
+    create database ods comment ""; 
+    2.1 创建原始日志表
+     drop table if exists ods_weblog_origin;
+
+     create table ods_weblog_origin
+     (
+         valid string,
+         remote_addr string,
+         remote_user string,
+         time_local string,
+         request string,
+         status string,
+         body_bytes_sent string,
+         http_referer string,
+         http_user_agent string
+     )
+     partitioned by (datestr string)
+     row format delimited 
+     fields terminated by '\001';
+
+     2.2 创建点击流模型表pageViews表
+     drop table if exists ods_click_pageviews;
+
+     create table ods_click_pageviews
+     (
+         session string,
+         remote_addr string,
+         remote_user string,
+         time_local string,
+         request string,
+         visit_step string,
+         page_staylong string,
+         http_refer string,
+         http_user_agent string,
+         body_bytes_sent string,
+         status string
+     )
+     partitioned by (datestr string)
+     row format delimited
+     fields terminated by '\001';
+
+     2.3 创建点击流visit 模型表
+     drop table if exists ods_click_stream_visit;
+     create table ods_click_stream_visit
+     (
+         session string,
+         remote_addr string,
+         inTime string,
+         outTime string,
+         inPage string,
+         outPage string,
+         referal string,
+         pageVisits int
+     )
+     partitioned by (datestr string)
+     row format delimited 
+     fields terminated by '\001';
+
+
+3. 导入数据
+
+在hive中使用hadoop的dfs命令
+dfs -ls /;
+
+上传文件
+dfs -put /home/hadoop/hive_data/mylog.log /;
+
+
+加载数据(在添加分区表数据中的时候，必须制定分区)
+load data inpath '/mylog.log' into table ods_weblog_origin partition(datestr='20130818')
+
+查看表中的数据总数
+select count(*) from ods_weblog_origin; # 是一个mapreduce，执行速度比较慢
